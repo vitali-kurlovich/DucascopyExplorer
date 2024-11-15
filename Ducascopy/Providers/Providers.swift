@@ -8,28 +8,21 @@
 import Foundation
 import HTTPTypes
 
-struct Providers {
-    
-    static var instrumentsCollectionProvider:InstrumentsCollectionProvider<DucascopyRequestProvider> {
+enum Providers {
+    static var instrumentsCollectionProvider: InstrumentsCollectionProvider<DucascopyRequestProvider> {
         InstrumentsCollectionProvider(.init())
     }
-    
 }
-
 
 struct DucascopyRequestProvider: HTTPRequestProvider {
-        
     func request() -> HTTPRequest {
-       let privider = BaseHTTPRequestProvider(.ducascopyURL)
+        let privider = BaseHTTPRequestProvider(.ducascopyURL)
         return privider.request()
     }
-
 }
 
-extension URL {
-    
-    fileprivate static var ducascopyURL: URL {
-        URL(string:"https://freeserv.dukascopy.com/2.0/index.php?path=common%2Finstruments&json")!
+private extension URL {
+    static var ducascopyURL: URL {
+        URL(string: "https://freeserv.dukascopy.com/2.0/index.php?path=common%2Finstruments&json")!
     }
 }
-

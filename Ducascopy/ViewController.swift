@@ -8,7 +8,6 @@
 import UIKit
 
 class ViewController: UIViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -22,13 +21,11 @@ class ViewController: UIViewController {
     func fetch() {
         Task {
             do {
-                let instruments = try await  Providers.instrumentsCollectionProvider.fetch()
+                let instruments = try await Providers.instrumentsCollectionProvider.fetch()
                 print(instruments)
             } catch {
                 print(error.localizedDescription)
             }
         }
     }
-
 }
-

@@ -6,5 +6,5 @@
 //
 
 struct InstrumentsCollection: Decodable {
-    let groups:[String: Group]
+    let groups: [String: Group]
 }

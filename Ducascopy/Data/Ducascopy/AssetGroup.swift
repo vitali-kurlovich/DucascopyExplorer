@@ -6,9 +6,9 @@
 //
 
 struct Group: Decodable {
-    let id:String
+    let id: String
     let parent: String?
-    
-    let title:String
-    let instruments:[String]?
+
+    let title: String
+    let instruments: [String]?
 }
