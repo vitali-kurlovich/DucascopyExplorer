@@ -18,11 +18,9 @@ extension AssetPickerCollectionViewController {
 final class AssetPickerCollectionViewController: UICollectionViewController {
     var selectAssetHandler: ((Asset) -> Void)? {
         didSet {
-            //  resultViewController.selectAssetHandler = selectAssetHandler
+            resultViewController.selectAssetHandler = selectAssetHandler
         }
     }
-
-    // private lazy var appSettings = ApplicationSettings()
 
     private lazy var dataSource: UICollectionViewDiffableDataSource<Int, NodeViewItem> = { [unowned self] in
         let cellRegistration = self.cellRegistration()
@@ -38,19 +36,18 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
         }
     }()
 
-     private lazy var resultViewController: AssetPickerResultViewController = { [unowned self] in
-         var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
-         layoutConfig.headerMode = .supplementary
+    private lazy var resultViewController: AssetPickerResultViewController = { [unowned self] in
+        var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
+        layoutConfig.headerMode = .supplementary
 
-         let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
+        let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
 
-         return AssetPickerResultViewController(collectionViewLayout: listLayout)
-     }()
+        return AssetPickerResultViewController(collectionViewLayout: listLayout)
+    }()
 
-     private lazy var searchController: UISearchController = { [unowned self] in searchViewController()
-     }()
+    private lazy var searchController: UISearchController = { [unowned self] in searchViewController()
+    }()
 
-     
     @MainActor
     private var state: State = .none {
         didSet {
@@ -63,11 +60,11 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
         didSet {
             if oldValue != folders {
                 folderView = folders.map { .init(folder: $0) }
-                
+
                 let groups = folders.map { root in
                     AssetsCollection(root)
                 }
-                
+
                 resultViewController.assetsState = .groups(groups)
             }
         }
@@ -86,7 +83,7 @@ extension AssetPickerCollectionViewController {
     enum State: Equatable {
         case none
         case inProgress
-        case error
+        case error(String)
         case ready([AssetFolder])
     }
 
@@ -94,13 +91,15 @@ extension AssetPickerCollectionViewController {
     func setNeedsUpdateState() {
         switch state {
         case .none:
-            break
+            contentUnavailableConfiguration = .none
         case .inProgress:
             contentUnavailableConfiguration = UIContentUnavailableConfiguration.loading()
-        case .error:
-            var  configuration  = UIContentUnavailableConfiguration.empty()
+        case let .error(description):
+            var configuration = UIContentUnavailableConfiguration.empty()
             configuration.image = UIImage(systemName: "figure.roll")
             configuration.text = "Error..."
+            configuration.secondaryText = description
+
             contentUnavailableConfiguration = configuration
         case let .ready(folders):
             contentUnavailableConfiguration = .none
@@ -108,19 +107,16 @@ extension AssetPickerCollectionViewController {
         }
     }
 
-   private func fetch() {
-        
+    private func fetch() {
         Task {
             do {
                 self.state = .inProgress
-
                 let instruments = try await Providers.instrumentsCollectionProvider.fetch()
                 self.state = .ready(.init(instruments))
-
             } catch {
-                self.state = .error
+                let description = error.localizedDescription
+                self.state = .error(description)
             }
-            // instruments.groups
         }
     }
 }
@@ -128,15 +124,10 @@ extension AssetPickerCollectionViewController {
 extension AssetPickerCollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-
         title = "Select Asset"
-
-        prepareNavigationBar()
-
         definesPresentationContext = true
-
+        prepareNavigationBar()
         fetch()
-        // prepareProvider()
     }
 
     override
@@ -208,19 +199,12 @@ extension AssetPickerCollectionViewController {
     @MainActor
     func apply(_ folders: [FolderViewItem], animatingDifferences: Bool = false) {
         var snapshot = self.snapshot(folders: folders)
-
-        //   DispatchQueue.main.async { [weak self] in
-        //   guard let self else { return }
         let source = dataSource.snapshot(for: 0)
-
         let items = source.items
-
         let expanded = items.filter { source.isExpanded($0) }
-
         snapshot.expand(expanded)
 
         dataSource.apply(snapshot, to: 0, animatingDifferences: animatingDifferences)
-        // }
     }
 }
 
@@ -249,7 +233,6 @@ extension AssetPickerCollectionViewController: UISearchResultsUpdating {
         resultViewController.searchString = searchString ?? ""
     }
 }
-
 
 private
 extension AssetPickerCollectionViewController {

@@ -35,7 +35,7 @@ extension AssetPickerResultViewController.AssetsState {
             if result.isEmpty {
                 return .noResult
             }
-            
+
             return .groups(result)
         }
     }
@@ -162,7 +162,6 @@ extension AssetPickerResultViewController {
         case .noResult:
             contentUnavailableConfiguration = UIContentUnavailableConfiguration.search()
             sections = []
-           
         }
     }
 
