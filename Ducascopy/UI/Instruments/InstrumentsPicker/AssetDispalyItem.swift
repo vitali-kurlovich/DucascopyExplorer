@@ -2,7 +2,7 @@
 //  AssetDispalyItem.swift
 //  Ducascopy
 //
-//  Created by Vitali Kurlovich on 15.11.24.
+//  Created by Vitali Kurlovich on 17.11.24.
 //
 
 protocol AssetDispalyItem {

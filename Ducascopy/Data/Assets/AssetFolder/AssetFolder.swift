@@ -45,19 +45,19 @@ extension AssetFolder {
     }
 }
 
-extension AssetPath {
-    func append(_ pathComponent: String) -> AssetPath {
-        precondition(!pathComponent.isEmpty)
+public
+extension AssetFolder {
+    var allAssets: [Asset] {
+        extractAllAssets(from: self)
+    }
 
-        var path = self.path
-        path.append(pathComponent)
-
-        return .init(path: path)
+    private func extractAllAssets(from folder: AssetFolder) -> [Asset] {
+        folder.assets + folder.folders.flatMap { extractAllAssets(from: $0) }
     }
 }
 
 extension [AssetFolder] {
-    init(_ collection: InstrumentsCollection /* groupsMap: [String: AssetGroup] */ ) {
+    init(_ collection: InstrumentsCollection) {
         let groups = collection.groups
         let instruments = collection.instruments
 
@@ -66,7 +66,7 @@ extension [AssetFolder] {
 
             return group.instruments?.compactMap { id -> Asset? in
                 guard let instrumet = instruments[id] else { return nil }
-                let path = path.append(id)
+                let path = path.setQuery(.init(["symbol": id]))
                 return Asset(instrumet, id: id, path: path)
             } ?? []
         }

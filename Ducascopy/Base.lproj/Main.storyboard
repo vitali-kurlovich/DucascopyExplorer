@@ -17,31 +17,21 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nzo-n6-sBU">
-                                <rect key="frame" x="159" y="407" width="75" height="38"/>
+                                <rect key="frame" x="101" y="409" width="191" height="34.333333333333314"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Show me some magic"/>
                                 <connections>
                                     <action selector="onStart" destination="h1P-RE-JgK" eventType="touchUpInside" id="XU6-HT-taH"/>
                                 </connections>
                             </button>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="monkey" translatesAutoresizingMaskIntoConstraints="NO" id="LK3-gT-ZZm">
-                                <rect key="frame" x="16" y="83" width="361" height="300"/>
-                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Iz0-hk-wpQ"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="LK3-gT-ZZm" firstAttribute="leading" secondItem="Iz0-hk-wpQ" secondAttribute="leading" constant="16" id="0ly-nv-Knx"/>
-                            <constraint firstItem="Iz0-hk-wpQ" firstAttribute="trailing" secondItem="LK3-gT-ZZm" secondAttribute="trailing" constant="16" id="1nw-jM-dbY"/>
                             <constraint firstItem="Nzo-n6-sBU" firstAttribute="centerX" secondItem="0tB-jb-neY" secondAttribute="centerX" id="7Vj-M4-Zwx"/>
-                            <constraint firstItem="Nzo-n6-sBU" firstAttribute="top" secondItem="LK3-gT-ZZm" secondAttribute="bottom" constant="24" id="OmW-la-Sj4"/>
-                            <constraint firstItem="LK3-gT-ZZm" firstAttribute="top" secondItem="Iz0-hk-wpQ" secondAttribute="top" constant="24" id="noG-RB-Mpc"/>
                             <constraint firstItem="Nzo-n6-sBU" firstAttribute="centerY" secondItem="0tB-jb-neY" secondAttribute="centerY" id="rf2-ph-Z0X"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="imageView" destination="LK3-gT-ZZm" id="TAF-o9-fl4"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0E4-OC-ZEP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -49,7 +39,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="monkey" width="400" height="300"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

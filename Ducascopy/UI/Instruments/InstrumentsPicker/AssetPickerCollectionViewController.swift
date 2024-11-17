@@ -38,30 +38,6 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
         }
     }()
 
-    /*
-     private typealias AssetsState = AssetsProvider.AssetsState
-
-     private var assetsState: AssetsState = .init() {
-         didSet {
-             let root = AssetFolder(assetsState.allAssets)
-             folders = root.folders
-
-             assert(root.assets.isEmpty)
-
-          //   resultViewController.assetsState = assetsState
-         }
-     }
-     */
-
-    // private var assetStateCancalable: AnyCancellable?
-    /*
-        private var assetsProvider: AssetsProvider? {
-            didSet {
-                setNeedsUpdateProvider()
-            }
-        }
-     */
-    /*
      private lazy var resultViewController: AssetPickerResultViewController = { [unowned self] in
          var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
          layoutConfig.headerMode = .supplementary
@@ -74,8 +50,7 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
      private lazy var searchController: UISearchController = { [unowned self] in searchViewController()
      }()
 
-     */
-
+     
     @MainActor
     private var state: State = .none {
         didSet {
@@ -88,6 +63,12 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
         didSet {
             if oldValue != folders {
                 folderView = folders.map { .init(folder: $0) }
+                
+                let groups = folders.map { root in
+                    AssetsCollection(root)
+                }
+                
+                resultViewController.assetsState = .groups(groups)
             }
         }
     }
@@ -115,17 +96,20 @@ extension AssetPickerCollectionViewController {
         case .none:
             break
         case .inProgress:
-            break
+            contentUnavailableConfiguration = UIContentUnavailableConfiguration.loading()
         case .error:
-            break
+            var  configuration  = UIContentUnavailableConfiguration.empty()
+            configuration.image = UIImage(systemName: "figure.roll")
+            configuration.text = "Error..."
+            contentUnavailableConfiguration = configuration
         case let .ready(folders):
+            contentUnavailableConfiguration = .none
             self.folders = folders
         }
     }
 
-    func fetch() {
-        state = .inProgress
-
+   private func fetch() {
+        
         Task {
             do {
                 self.state = .inProgress
@@ -147,7 +131,7 @@ extension AssetPickerCollectionViewController {
 
         title = "Select Asset"
 
-        // prepareNavigationBar()
+        prepareNavigationBar()
 
         definesPresentationContext = true
 
@@ -242,6 +226,33 @@ extension AssetPickerCollectionViewController {
 
 private
 extension AssetPickerCollectionViewController {
+    func searchViewController() -> UISearchController {
+        let controller = UISearchController(searchResultsController: resultViewController)
+        controller.searchResultsUpdater = self
+        controller.searchBar.autocapitalizationType = .words
+        controller.searchBar.delegate = self
+
+        return controller
+    }
+}
+
+extension AssetPickerCollectionViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+}
+
+extension AssetPickerCollectionViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchString = searchController.searchBar.text
+
+        resultViewController.searchString = searchString ?? ""
+    }
+}
+
+
+private
+extension AssetPickerCollectionViewController {
     func snapshot(folders: [FolderViewItem]) -> NSDiffableDataSourceSectionSnapshot<NodeViewItem> {
         var snapshot = NSDiffableDataSourceSectionSnapshot<NodeViewItem>()
 
@@ -271,5 +282,21 @@ extension AssetPickerCollectionViewController {
         append(folders: folders, to: nil)
 
         return snapshot
+    }
+}
+
+private
+extension AssetPickerCollectionViewController {
+    func prepareNavigationBar() {
+        navigationItem.searchController = searchController
+
+        let closeAction = UIAction { [weak self] _ in
+            self?.dismiss(animated: true)
+        }
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .close, primaryAction: closeAction)
+
+        // Make the search bar always visible.
+        navigationItem.hidesSearchBarWhenScrolling = false
     }
 }
