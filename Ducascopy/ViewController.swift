@@ -11,11 +11,26 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+
+        let image = UIImage(named: "monkey")
+        let images = image?.images
+
+        print("\(images?.count ?? 0)")
+
+        imageView?.image = image
+        imageView?.startAnimating()
     }
+
+    @IBOutlet
+    var imageView: UIImageView?
 
     @IBAction
     func onStart() {
-        fetch()
+        // fetch()
+
+        let picker = AssetPickerViewController()
+
+        present(picker, animated: true)
     }
 
     func fetch() {

@@ -1,0 +1,275 @@
+//
+//  AssetPickerCollectionViewController.swift
+//  Ducascopy
+//
+//  Created by Vitali Kurlovich on 15.11.24.
+//
+
+import UIKit
+
+extension AssetPickerCollectionViewController {
+    convenience init() {
+        let config = UICollectionLayoutListConfiguration(appearance: .plain)
+        let layout = UICollectionViewCompositionalLayout.list(using: config)
+        self.init(collectionViewLayout: layout)
+    }
+}
+
+final class AssetPickerCollectionViewController: UICollectionViewController {
+    var selectAssetHandler: ((Asset) -> Void)? {
+        didSet {
+            //  resultViewController.selectAssetHandler = selectAssetHandler
+        }
+    }
+
+    // private lazy var appSettings = ApplicationSettings()
+
+    private lazy var dataSource: UICollectionViewDiffableDataSource<Int, NodeViewItem> = { [unowned self] in
+        let cellRegistration = self.cellRegistration()
+        let folderRegistration = self.folderRegistration()
+
+        return .init(collectionView: self.collectionView) { collectionView, indexPath, item in
+            switch item {
+            case let .asset(asset):
+                return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: asset)
+            case let .folder(folder):
+                return collectionView.dequeueConfiguredReusableCell(using: folderRegistration, for: indexPath, item: folder)
+            }
+        }
+    }()
+
+    /*
+     private typealias AssetsState = AssetsProvider.AssetsState
+
+     private var assetsState: AssetsState = .init() {
+         didSet {
+             let root = AssetFolder(assetsState.allAssets)
+             folders = root.folders
+
+             assert(root.assets.isEmpty)
+
+          //   resultViewController.assetsState = assetsState
+         }
+     }
+     */
+
+    // private var assetStateCancalable: AnyCancellable?
+    /*
+        private var assetsProvider: AssetsProvider? {
+            didSet {
+                setNeedsUpdateProvider()
+            }
+        }
+     */
+    /*
+     private lazy var resultViewController: AssetPickerResultViewController = { [unowned self] in
+         var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
+         layoutConfig.headerMode = .supplementary
+
+         let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
+
+         return AssetPickerResultViewController(collectionViewLayout: listLayout)
+     }()
+
+     private lazy var searchController: UISearchController = { [unowned self] in searchViewController()
+     }()
+
+     */
+
+    @MainActor
+    private var state: State = .none {
+        didSet {
+            guard oldValue != state else { return }
+            setNeedsUpdateState()
+        }
+    }
+
+    private var folders: [AssetFolder] = [] {
+        didSet {
+            if oldValue != folders {
+                folderView = folders.map { .init(folder: $0) }
+            }
+        }
+    }
+
+    private var folderView: [FolderViewItem] = [] {
+        didSet {
+            if oldValue != folderView {
+                setNeedsContentUpdate()
+            }
+        }
+    }
+}
+
+extension AssetPickerCollectionViewController {
+    enum State: Equatable {
+        case none
+        case inProgress
+        case error
+        case ready([AssetFolder])
+    }
+
+    @MainActor
+    func setNeedsUpdateState() {
+        switch state {
+        case .none:
+            break
+        case .inProgress:
+            break
+        case .error:
+            break
+        case let .ready(folders):
+            self.folders = folders
+        }
+    }
+
+    func fetch() {
+        state = .inProgress
+
+        Task {
+            do {
+                self.state = .inProgress
+
+                let instruments = try await Providers.instrumentsCollectionProvider.fetch()
+                self.state = .ready(.init(instruments))
+
+            } catch {
+                self.state = .error
+            }
+            // instruments.groups
+        }
+    }
+}
+
+extension AssetPickerCollectionViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        title = "Select Asset"
+
+        // prepareNavigationBar()
+
+        definesPresentationContext = true
+
+        fetch()
+        // prepareProvider()
+    }
+
+    override
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if let selectAssetHandler, let item = dataSource.itemIdentifier(for: indexPath) {
+            switch item {
+            case let .asset(asset):
+                selectAssetHandler(asset)
+
+            default:
+                break
+            }
+        }
+
+        collectionView.deselectItem(at: indexPath, animated: true)
+    }
+}
+
+private
+extension AssetPickerCollectionViewController {
+    func cellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, Asset> {
+        .init { cell, _, item in
+
+            var content = cell.defaultContentConfiguration()
+            content.text = item.displayTitle
+
+            content.secondaryText = item.displayDetails
+            content.secondaryTextProperties.color = .gray
+
+            cell.contentConfiguration = content
+
+            cell.accessories = [.detail {
+                // onDetailHandler(item)
+
+//                    let controller = AssetDetailsViewController(asset: item)
+//                    controller.modalPresentationStyle = .formSheet
+//                    self?.present(controller, animated: true)
+
+            }]
+        }
+    }
+
+    func folderRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, AssetFolderViewItem> {
+        .init { cell, _, item in
+
+            var content = cell.defaultContentConfiguration()
+            content.text = item.displayTitle
+
+            content.secondaryText = item.displayDetails
+            content.secondaryTextProperties.color = .gray
+
+            content.image = UIImage(systemName: "folder")
+
+            cell.contentConfiguration = content
+
+            let disclosureOptions = UICellAccessory.OutlineDisclosureOptions(style: .header)
+            cell.accessories = [.outlineDisclosure(options: disclosureOptions)]
+        }
+    }
+}
+
+private
+extension AssetPickerCollectionViewController {
+    @MainActor
+    func setNeedsContentUpdate() {
+        apply(folderView, animatingDifferences: true)
+    }
+
+    @MainActor
+    func apply(_ folders: [FolderViewItem], animatingDifferences: Bool = false) {
+        var snapshot = self.snapshot(folders: folders)
+
+        //   DispatchQueue.main.async { [weak self] in
+        //   guard let self else { return }
+        let source = dataSource.snapshot(for: 0)
+
+        let items = source.items
+
+        let expanded = items.filter { source.isExpanded($0) }
+
+        snapshot.expand(expanded)
+
+        dataSource.apply(snapshot, to: 0, animatingDifferences: animatingDifferences)
+        // }
+    }
+}
+
+private
+extension AssetPickerCollectionViewController {
+    func snapshot(folders: [FolderViewItem]) -> NSDiffableDataSourceSectionSnapshot<NodeViewItem> {
+        var snapshot = NSDiffableDataSourceSectionSnapshot<NodeViewItem>()
+
+        func append(_ items: [NodeViewItem], to parent: NodeViewItem?) {
+            guard !items.isEmpty else {
+                return
+            }
+
+            snapshot.append(items, to: parent)
+        }
+
+        func append(folders: [FolderViewItem], to parent: NodeViewItem?) {
+            guard !folders.isEmpty else {
+                return
+            }
+
+            let items = folders.map { $0.root }
+            append(items, to: parent)
+
+            for folder in folders {
+                append(folder.assets, to: folder.root)
+
+                append(folders: folder.folders, to: folder.root)
+            }
+        }
+
+        append(folders: folders, to: nil)
+
+        return snapshot
+    }
+}
