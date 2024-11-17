@@ -56,14 +56,16 @@ extension AssetPickerCollectionViewController.NodeViewItem: AssetDispalyItem {
 
 extension AssetPickerCollectionViewController {
     struct AssetFolderViewItem: Hashable, AssetDispalyItem {
-        let path: AssetPath
+        let folder: AssetFolder
 
         init(_ folder: AssetFolder) {
-            path = folder.path
+            self.folder = folder
         }
 
+        var path: AssetPath { folder.path }
+
         var displayTitle: String? {
-            path.last
+            folder.title
         }
 
         var displayDetails: String? {
