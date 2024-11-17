@@ -22,31 +22,9 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
         }
     }
 
-    private lazy var dataSource: UICollectionViewDiffableDataSource<Int, NodeViewItem> = { [unowned self] in
-        let cellRegistration = self.cellRegistration()
-        let folderRegistration = self.folderRegistration()
-
-        return .init(collectionView: self.collectionView) { collectionView, indexPath, item in
-            switch item {
-            case let .asset(asset):
-                return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: asset)
-            case let .folder(folder):
-                return collectionView.dequeueConfiguredReusableCell(using: folderRegistration, for: indexPath, item: folder)
-            }
-        }
-    }()
-
-    private lazy var resultViewController: AssetPickerResultViewController = { [unowned self] in
-        var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
-        layoutConfig.headerMode = .supplementary
-
-        let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
-
-        return AssetPickerResultViewController(collectionViewLayout: listLayout)
-    }()
-
-    private lazy var searchController: UISearchController = { [unowned self] in searchViewController()
-    }()
+    private lazy var dataSource = makeDataSource()
+    private lazy var resultViewController: AssetPickerResultViewController = makeResultController()
+    private lazy var searchController: UISearchController = makeSearchViewController()
 
     @MainActor
     private var state: State = .none {
@@ -77,51 +55,7 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
             }
         }
     }
-}
 
-extension AssetPickerCollectionViewController {
-    enum State: Equatable {
-        case none
-        case inProgress
-        case error(String)
-        case ready([AssetFolder])
-    }
-
-    @MainActor
-    func setNeedsUpdateState() {
-        switch state {
-        case .none:
-            contentUnavailableConfiguration = .none
-        case .inProgress:
-            contentUnavailableConfiguration = UIContentUnavailableConfiguration.loading()
-        case let .error(description):
-            var configuration = UIContentUnavailableConfiguration.empty()
-            configuration.image = UIImage(systemName: "figure.roll")
-            configuration.text = "Error..."
-            configuration.secondaryText = description
-
-            contentUnavailableConfiguration = configuration
-        case let .ready(folders):
-            contentUnavailableConfiguration = .none
-            self.folders = folders
-        }
-    }
-
-    private func fetch() {
-        Task {
-            do {
-                self.state = .inProgress
-                let instruments = try await Providers.instrumentsCollectionProvider.fetch()
-                self.state = .ready(.init(instruments))
-            } catch {
-                let description = error.localizedDescription
-                self.state = .error(description)
-            }
-        }
-    }
-}
-
-extension AssetPickerCollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Select Asset"
@@ -143,6 +77,79 @@ extension AssetPickerCollectionViewController {
         }
 
         collectionView.deselectItem(at: indexPath, animated: true)
+    }
+}
+
+private
+extension AssetPickerCollectionViewController {
+    enum State: Equatable {
+        case none
+        case inProgress
+        case error(String)
+        case ready([AssetFolder])
+    }
+
+    @MainActor
+    func setNeedsUpdateState() {
+        switch state {
+        case .none:
+            contentUnavailableConfiguration = .none
+        case .inProgress:
+            contentUnavailableConfiguration = UIContentUnavailableConfiguration.loading()
+        case let .error(description):
+            var configuration = UIContentUnavailableConfiguration.empty()
+            configuration.image = UIImage(systemName: "figure.roll")
+            configuration.text = "Error..."
+            configuration.secondaryText = description
+            contentUnavailableConfiguration = configuration
+        case let .ready(folders):
+            contentUnavailableConfiguration = .none
+            self.folders = folders
+        }
+    }
+}
+
+private
+extension AssetPickerCollectionViewController {
+    private func fetch() {
+        Task {
+            do {
+                self.state = .inProgress
+                let instruments = try await Providers.instrumentsCollectionProvider.fetch()
+                self.state = .ready(.init(instruments))
+            } catch {
+                let description = error.localizedDescription
+                self.state = .error(description)
+            }
+        }
+    }
+}
+
+private
+extension AssetPickerCollectionViewController {
+    typealias DataSource = UICollectionViewDiffableDataSource<Int, NodeViewItem>
+
+    func makeDataSource() -> DataSource {
+        let cellRegistration = self.cellRegistration()
+        let folderRegistration = self.folderRegistration()
+
+        return .init(collectionView: collectionView) { collectionView, indexPath, item in
+            switch item {
+            case let .asset(asset):
+                return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: asset)
+            case let .folder(folder):
+                return collectionView.dequeueConfiguredReusableCell(using: folderRegistration, for: indexPath, item: folder)
+            }
+        }
+    }
+
+    func makeResultController() -> AssetPickerResultViewController {
+        var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
+        layoutConfig.headerMode = .supplementary
+
+        let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
+
+        return AssetPickerResultViewController(collectionViewLayout: listLayout)
     }
 }
 
@@ -210,7 +217,7 @@ extension AssetPickerCollectionViewController {
 
 private
 extension AssetPickerCollectionViewController {
-    func searchViewController() -> UISearchController {
+    func makeSearchViewController() -> UISearchController {
         let controller = UISearchController(searchResultsController: resultViewController)
         controller.searchResultsUpdater = self
         controller.searchBar.autocapitalizationType = .words
