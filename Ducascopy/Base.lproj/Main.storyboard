@@ -16,22 +16,36 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nzo-n6-sBU">
-                                <rect key="frame" x="101" y="409" width="191" height="34.333333333333314"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Show me some magic"/>
-                                <connections>
-                                    <action selector="onStart" destination="h1P-RE-JgK" eventType="touchUpInside" id="XU6-HT-taH"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="x6c-eu-fX4">
+                                <rect key="frame" x="87.666666666666686" y="323.33333333333331" width="218" height="141.66666666666669"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rainbow" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="4le-9d-Ghd">
+                                        <rect key="frame" x="0.0" y="10.000000000000014" width="218" height="87.333333333333314"/>
+                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="90" weight="heavy"/>
+                                    </imageView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nzo-n6-sBU">
+                                        <rect key="frame" x="0.0" y="107.33333333333337" width="218" height="34.333333333333343"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="filled" image="wand.and.stars" catalog="system" title="Show me some magic" cornerStyle="dynamic"/>
+                                        <connections>
+                                            <action selector="buttonTouchDown" destination="h1P-RE-JgK" eventType="touchDown" id="Mqm-Va-kGz"/>
+                                            <action selector="onStart" destination="h1P-RE-JgK" eventType="touchUpInside" id="XU6-HT-taH"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Iz0-hk-wpQ"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Nzo-n6-sBU" firstAttribute="centerX" secondItem="0tB-jb-neY" secondAttribute="centerX" id="7Vj-M4-Zwx"/>
-                            <constraint firstItem="Nzo-n6-sBU" firstAttribute="centerY" secondItem="0tB-jb-neY" secondAttribute="centerY" id="rf2-ph-Z0X"/>
+                            <constraint firstItem="x6c-eu-fX4" firstAttribute="centerY" secondItem="0tB-jb-neY" secondAttribute="centerY" constant="-32" id="Kqm-cr-AgK"/>
+                            <constraint firstItem="x6c-eu-fX4" firstAttribute="centerX" secondItem="0tB-jb-neY" secondAttribute="centerX" id="aDb-Zw-eXT"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="button" destination="Nzo-n6-sBU" id="Idd-TS-Men"/>
+                        <outlet property="imageView" destination="4le-9d-Ghd" id="FAW-hG-Y5p"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0E4-OC-ZEP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -39,6 +53,8 @@
         </scene>
     </scenes>
     <resources>
+        <image name="rainbow" catalog="system" width="128" height="71"/>
+        <image name="wand.and.stars" catalog="system" width="128" height="112"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

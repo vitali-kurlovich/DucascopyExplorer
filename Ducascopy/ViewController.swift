@@ -12,35 +12,27 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
-        let image = UIImage(named: "monkey")
-        let images = image?.images
+        imageView?.preferredSymbolConfiguration =
+            imageView?.preferredSymbolConfiguration?.applying(UIImage.SymbolConfiguration.preferringMulticolor())
 
-        print("\(images?.count ?? 0)")
-
-        imageView?.image = image
-        imageView?.startAnimating()
+        imageView?.addSymbolEffect(.variableColor.iterative.dimInactiveLayers)
     }
 
     @IBOutlet
     var imageView: UIImageView?
 
+    @IBOutlet
+    var button: UIButton?
+
     @IBAction
     func onStart() {
-        // fetch()
-
         let picker = AssetPickerViewController()
-
         present(picker, animated: true)
     }
 
-    func fetch() {
-        Task {
-            do {
-                let instruments = try await Providers.instrumentsCollectionProvider.fetch()
-                print(instruments)
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
+    @IBAction
+    func buttonTouchDown() {
+        imageView?.addSymbolEffect(.bounce.down)
+        button?.imageView?.addSymbolEffect(.bounce)
     }
 }
