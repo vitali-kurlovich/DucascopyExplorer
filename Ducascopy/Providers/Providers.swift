@@ -8,16 +8,21 @@
 import Foundation
 import HTTPTypes
 
-enum Providers {
-    static var instrumentsCollectionProvider: InstrumentsCollectionProvider<DucascopyRequestProvider> {
-        InstrumentsCollectionProvider(.init())
+enum Providers {}
+
+extension Providers {
+    typealias InstrumentsProvider = InstrumentsCollectionProvider<URLRequestProvider>
+
+    static var instrumentsCollectionProvider: InstrumentsProvider {
+        InstrumentsProvider(.init(url: .ducascopyURL))
     }
 }
 
-struct DucascopyRequestProvider: HTTPRequestProvider {
-    func request() -> HTTPRequest {
-        let privider = BaseHTTPRequestProvider(.ducascopyURL)
-        return privider.request()
+extension Providers {
+    typealias AssetsFoldersProvider = AssetFoldersProvider<InstrumentsProvider>
+
+    static var assetFoldersProvider: AssetsFoldersProvider {
+        AssetsFoldersProvider(instrumentsCollectionProvider)
     }
 }
 

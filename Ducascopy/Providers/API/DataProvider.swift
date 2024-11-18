@@ -5,7 +5,7 @@
 //  Created by Vitali Kurlovich on 14.11.24.
 //
 
-protocol DataProvider {
+protocol DataProvider<Result, ProviderError> {
     associatedtype Result
     associatedtype ProviderError: Error
 

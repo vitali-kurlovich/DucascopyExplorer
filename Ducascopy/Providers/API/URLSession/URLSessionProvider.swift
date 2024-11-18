@@ -35,11 +35,7 @@ struct URLSessionProvider: ParametredDataProvider {
             switch status.kind {
             case .invalid:
                 throw ProviderError.invalid(status, data)
-            case .informational:
-                break
-            case .successful:
-                break
-            case .redirection:
+            case .informational, .successful, .redirection:
                 break
             case .clientError:
                 throw ProviderError.clientError(status, data)

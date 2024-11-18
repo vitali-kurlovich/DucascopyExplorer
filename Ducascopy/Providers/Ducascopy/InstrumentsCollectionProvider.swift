@@ -1,5 +1,5 @@
 //
-//  InstrumentsHTTPRequestProvider.swift
+//  InstrumentsCollectionProvider.swift
 //  Ducascopy
 //
 //  Created by Vitali Kurlovich on 14.11.24.
@@ -10,14 +10,7 @@ import HTTPTypes
 
 struct InstrumentsCollectionProvider<RequestProvider: HTTPRequestProvider>: DataProvider {
     typealias Result = InstrumentsCollection
-
-    enum ProviderError: Error {
-        case anyError(any Error)
-        case invalid(HTTPResponse.Status, Data)
-        case clientError(HTTPResponse.Status, Data)
-        case serverError(HTTPResponse.Status, Data)
-        case decodingError(DecodingError)
-    }
+    typealias ProviderError = DataProviderError
 
     let requestProvider: RequestProvider
     let urlSession: URLSession
@@ -27,7 +20,7 @@ struct InstrumentsCollectionProvider<RequestProvider: HTTPRequestProvider>: Data
         self.urlSession = urlSession
     }
 
-    func fetch() async throws(ProviderError) -> InstrumentsCollection {
+    func fetch() async throws(ProviderError) -> Result {
         let sessionProvider = URLSessionProvider(urlSession: urlSession)
 
         let dataProvider = sessionProvider.map { data, _ -> Data in

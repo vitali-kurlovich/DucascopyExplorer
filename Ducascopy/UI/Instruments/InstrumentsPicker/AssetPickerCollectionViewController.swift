@@ -5,7 +5,28 @@
 //  Created by Vitali Kurlovich on 15.11.24.
 //
 
+import ComposableArchitecture
 import UIKit
+
+@Reducer
+struct InstrumentsFeature {
+    @ObservableState
+    struct State: Equatable {
+        var loading: LoadingState = .none
+    }
+
+    enum LoadingState: Equatable {
+        case none
+        case inProgress
+        case error(String)
+        case ready([AssetFolder])
+    }
+
+    enum Action {
+        case fetchFolders
+        case recieveFolders([AssetFolder])
+    }
+}
 
 extension AssetPickerCollectionViewController {
     convenience init() {
@@ -115,8 +136,8 @@ extension AssetPickerCollectionViewController {
         Task {
             do {
                 self.state = .inProgress
-                let instruments = try await Providers.instrumentsCollectionProvider.fetch()
-                self.state = .ready(.init(instruments))
+                let folders = try await Providers.assetFoldersProvider.fetch()
+                self.state = .ready(folders)
             } catch {
                 let description = error.localizedDescription
                 self.state = .error(description)
@@ -280,8 +301,8 @@ extension AssetPickerCollectionViewController {
     func prepareNavigationBar() {
         navigationItem.searchController = searchController
 
-        let closeAction = UIAction { [weak self] _ in
-            self?.dismiss(animated: true)
+        let closeAction = UIAction { [unowned self] _ in
+            self.dismiss(animated: true)
         }
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .close, primaryAction: closeAction)
