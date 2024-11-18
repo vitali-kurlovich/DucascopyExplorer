@@ -13,12 +13,7 @@ struct URLSessionProvider: ParametredDataProvider {
     typealias Result = (Data, HTTPResponse)
     typealias Params = HTTPRequest
 
-    enum ProviderError: Error {
-        case anyError(any Error)
-        case invalid(HTTPResponse.Status, Data)
-        case clientError(HTTPResponse.Status, Data)
-        case serverError(HTTPResponse.Status, Data)
-    }
+    typealias ProviderError = DataProviderError
 
     let urlSession: URLSession
 

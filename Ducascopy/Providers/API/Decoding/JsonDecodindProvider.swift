@@ -8,13 +8,9 @@
 import Foundation
 
 struct JsonDecodingProvider<Params, Result: Decodable, Provider: ParametredDataProvider>: ParametredDataProvider
-    where Provider.Params == Params, Provider.Result == Data
+    where Provider.Params == Params, Provider.Result == Data, Provider.ProviderError == DataProviderError
 {
-    enum ProviderError: Error {
-        case anyError(any Error)
-        case dataProviderError(Provider.ProviderError)
-        case decodingError(DecodingError)
-    }
+    typealias ProviderError = DataProviderError
 
     let decoder: JSONDecoder
     let provider: Provider
@@ -31,7 +27,7 @@ struct JsonDecodingProvider<Params, Result: Decodable, Provider: ParametredDataP
             return try decoder.decode(Result.self, from: data)
         } catch {
             if let error = error as? Provider.ProviderError {
-                throw ProviderError.dataProviderError(error)
+                throw error
             }
 
             if let error = error as? DecodingError {

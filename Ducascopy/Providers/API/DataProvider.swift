@@ -12,7 +12,7 @@ protocol DataProvider<Result, ProviderError> {
     func fetch() async throws(ProviderError) -> Result
 }
 
-protocol ParametredDataProvider {
+protocol ParametredDataProvider<Params, Result, ProviderError> {
     associatedtype Params
     associatedtype Result
     associatedtype ProviderError: Error
