@@ -23,20 +23,74 @@ struct InstrumentsFeature {
     }
 
     enum Action {
+        case willAppear
         case fetchFolders
         case recieveFolders([AssetFolder])
+        case recieveError(String)
+    }
+    
+    var body: some Reducer<State, Action> {
+        Reduce { state, action in
+            switch action {
+            case .willAppear:
+                
+                switch state.loading {
+                case .ready, .inProgress:
+                    return .none
+                default:
+                    break
+                }
+                
+                return .run { send in
+                    await send( .fetchFolders )
+                }
+                
+            case .fetchFolders:
+                state.loading = .inProgress
+                return .run { send in
+                    do {
+                        let folders = try await Providers.assetFoldersProvider.fetch()
+                        await send( .recieveFolders(folders) )
+                    } catch {
+                        await send( .recieveError(error.localizedDescription))
+                    }
+                }
+                
+            case let .recieveFolders(folders):
+                state.loading = .ready(folders)
+                return .none
+                
+            case let .recieveError(description):
+                state.loading = .error(description)
+                return .none
+            }
+        }
     }
 }
 
-extension AssetPickerCollectionViewController {
-    convenience init() {
-        let config = UICollectionLayoutListConfiguration(appearance: .plain)
-        let layout = UICollectionViewCompositionalLayout.list(using: config)
-        self.init(collectionViewLayout: layout)
-    }
-}
+
 
 final class AssetPickerCollectionViewController: UICollectionViewController {
+    
+    let store: StoreOf<InstrumentsFeature>
+    
+    init(store: StoreOf<InstrumentsFeature> = .init(initialState: .init()) {
+        InstrumentsFeature()
+    }) {
+        
+        self.store = store
+         
+        let config = UICollectionLayoutListConfiguration(appearance: .plain)
+        let layout = UICollectionViewCompositionalLayout.list(using: config)
+        super.init(collectionViewLayout: layout)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+ 
+    
     var selectAssetHandler: ((Asset) -> Void)? {
         didSet {
             resultViewController.selectAssetHandler = selectAssetHandler
@@ -82,7 +136,29 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
         title = "Select Asset"
         definesPresentationContext = true
         prepareNavigationBar()
-        fetch()
+      
+        observe { [weak self] in
+            guard let self else { return }
+            
+            let loading = store.loading
+            
+            switch loading {
+            case .none:
+                break
+            case .inProgress:
+                self.state = .inProgress
+            case let .error(description):
+                self.state = .error(description)
+            case let .ready(folders):
+                self.state = .ready(folders)
+            }
+        }
+    }
+   
+    override func viewWillAppear( _ animated: Bool ) {
+        super.viewWillAppear(animated)
+        
+        store.send(.willAppear)
     }
 
     override
@@ -112,6 +188,7 @@ extension AssetPickerCollectionViewController {
 
     @MainActor
     func setNeedsUpdateState() {
+                
         switch state {
         case .none:
             contentUnavailableConfiguration = .none
@@ -130,21 +207,6 @@ extension AssetPickerCollectionViewController {
     }
 }
 
-private
-extension AssetPickerCollectionViewController {
-    private func fetch() {
-        Task {
-            do {
-                self.state = .inProgress
-                let folders = try await Providers.assetFoldersProvider.fetch()
-                self.state = .ready(folders)
-            } catch {
-                let description = error.localizedDescription
-                self.state = .error(description)
-            }
-        }
-    }
-}
 
 private
 extension AssetPickerCollectionViewController {
