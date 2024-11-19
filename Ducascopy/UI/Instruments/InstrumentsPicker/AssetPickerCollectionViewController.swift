@@ -8,89 +8,24 @@
 import ComposableArchitecture
 import UIKit
 
-@Reducer
-struct InstrumentsFeature {
-    @ObservableState
-    struct State: Equatable {
-        var loading: LoadingState = .none
-    }
-
-    enum LoadingState: Equatable {
-        case none
-        case inProgress
-        case error(String)
-        case ready([AssetFolder])
-    }
-
-    enum Action {
-        case willAppear
-        case fetchFolders
-        case recieveFolders([AssetFolder])
-        case recieveError(String)
-    }
-    
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            switch action {
-            case .willAppear:
-                
-                switch state.loading {
-                case .ready, .inProgress:
-                    return .none
-                default:
-                    break
-                }
-                
-                return .run { send in
-                    await send( .fetchFolders )
-                }
-                
-            case .fetchFolders:
-                state.loading = .inProgress
-                return .run { send in
-                    do {
-                        let folders = try await Providers.assetFoldersProvider.fetch()
-                        await send( .recieveFolders(folders) )
-                    } catch {
-                        await send( .recieveError(error.localizedDescription))
-                    }
-                }
-                
-            case let .recieveFolders(folders):
-                state.loading = .ready(folders)
-                return .none
-                
-            case let .recieveError(description):
-                state.loading = .error(description)
-                return .none
-            }
-        }
-    }
-}
-
-
-
 final class AssetPickerCollectionViewController: UICollectionViewController {
-    
     let store: StoreOf<InstrumentsFeature>
-    
+
     init(store: StoreOf<InstrumentsFeature> = .init(initialState: .init()) {
         InstrumentsFeature()
     }) {
-        
         self.store = store
-         
+
         let config = UICollectionLayoutListConfiguration(appearance: .plain)
         let layout = UICollectionViewCompositionalLayout.list(using: config)
         super.init(collectionViewLayout: layout)
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
- 
-    
+
     var selectAssetHandler: ((Asset) -> Void)? {
         didSet {
             resultViewController.selectAssetHandler = selectAssetHandler
@@ -100,14 +35,6 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
     private lazy var dataSource = makeDataSource()
     private lazy var resultViewController: AssetPickerResultViewController = makeResultController()
     private lazy var searchController: UISearchController = makeSearchViewController()
-
-    @MainActor
-    private var state: State = .none {
-        didSet {
-            guard oldValue != state else { return }
-            setNeedsUpdateState()
-        }
-    }
 
     private var folders: [AssetFolder] = [] {
         didSet {
@@ -136,28 +63,15 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
         title = "Select Asset"
         definesPresentationContext = true
         prepareNavigationBar()
-      
+
         observe { [weak self] in
-            guard let self else { return }
-            
-            let loading = store.loading
-            
-            switch loading {
-            case .none:
-                break
-            case .inProgress:
-                self.state = .inProgress
-            case let .error(description):
-                self.state = .error(description)
-            case let .ready(folders):
-                self.state = .ready(folders)
-            }
+            self?.setNeedsUpdateState()
         }
     }
-   
-    override func viewWillAppear( _ animated: Bool ) {
+
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         store.send(.willAppear)
     }
 
@@ -179,17 +93,9 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
 
 private
 extension AssetPickerCollectionViewController {
-    enum State: Equatable {
-        case none
-        case inProgress
-        case error(String)
-        case ready([AssetFolder])
-    }
-
     @MainActor
     func setNeedsUpdateState() {
-                
-        switch state {
+        switch store.loading {
         case .none:
             contentUnavailableConfiguration = .none
         case .inProgress:
@@ -206,7 +112,6 @@ extension AssetPickerCollectionViewController {
         }
     }
 }
-
 
 private
 extension AssetPickerCollectionViewController {
