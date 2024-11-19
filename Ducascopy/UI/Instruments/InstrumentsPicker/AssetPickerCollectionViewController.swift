@@ -9,7 +9,7 @@ import ComposableArchitecture
 import UIKit
 
 final class AssetPickerCollectionViewController: UICollectionViewController {
-    let store: StoreOf<InstrumentsFeature>
+    private let store: StoreOf<InstrumentsFeature>
 
     init(store: StoreOf<InstrumentsFeature> = .init(initialState: .init()) {
         InstrumentsFeature()
@@ -33,8 +33,8 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
     }
 
     private lazy var dataSource = makeDataSource()
-    private lazy var resultViewController: AssetPickerResultViewController = makeResultController()
-    private lazy var searchController: UISearchController = makeSearchViewController()
+    private lazy var resultViewController = makeResultController()
+    private lazy var searchController = makeSearchViewController()
 
     private var folders: [AssetFolder] = [] {
         didSet {
