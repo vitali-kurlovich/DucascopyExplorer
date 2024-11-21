@@ -9,19 +9,21 @@ import Foundation
 import HTTPTypes
 import HTTPTypesFoundation
 
-struct URLSessionProvider: ParametredDataProvider {
-    typealias Result = (Data, HTTPResponse)
-    typealias Params = HTTPRequest
+@available(iOS 13.0, *)
+@available(macOS 10.15, *)
+public struct URLSessionProvider: ParametredDataProvider {
+    public typealias Result = (Data, HTTPResponse)
+    public typealias Params = HTTPRequest
 
-    typealias ProviderError = DataProviderError
+    public typealias ProviderError = DataProviderError
 
     let urlSession: URLSession
 
-    init(urlSession: URLSession = .shared) {
+    public init(urlSession: URLSession = .shared) {
         self.urlSession = urlSession
     }
 
-    func fetch(_ params: Params) async throws(ProviderError) -> Result {
+    public func fetch(_ params: Params) async throws(ProviderError) -> Result {
         do {
             let (data, response) = try await urlSession.data(for: params)
 

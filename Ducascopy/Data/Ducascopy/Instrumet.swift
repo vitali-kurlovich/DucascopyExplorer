@@ -21,6 +21,20 @@ struct Instrumet: Decodable {
     let tag_list: [String]
 }
 
+struct InstrumetInfo {
+    let name: String
+
+    let baseCurrency: String
+    let quoteCurrency: String
+    let pipValue: Double
+
+    let tags: [String]
+}
+
+struct InstrumetHistoryFileInfo {
+    let filename: String
+}
+
 /*
 
  "title": "0027.HK/HKD",

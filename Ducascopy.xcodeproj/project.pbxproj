@@ -10,6 +10,7 @@
 		5D33C29C2CE6A2E2000CC0E5 /* HTTPTypes in Frameworks */ = {isa = PBXBuildFile; productRef = 5D33C29B2CE6A2E2000CC0E5 /* HTTPTypes */; };
 		5D33C29E2CE6A2E2000CC0E5 /* HTTPTypesFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 5D33C29D2CE6A2E2000CC0E5 /* HTTPTypesFoundation */; };
 		5D93DB812CEB0BF200FB1AC2 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 5D93DB802CEB0BF200FB1AC2 /* ComposableArchitecture */; };
+		5DFFD37E2CEDEED0005D9400 /* DataProvider in Frameworks */ = {isa = PBXBuildFile; productRef = 5DFFD37D2CEDEED0005D9400 /* DataProvider */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D33C29C2CE6A2E2000CC0E5 /* HTTPTypes in Frameworks */,
+				5DFFD37E2CEDEED0005D9400 /* DataProvider in Frameworks */,
 				5D33C29E2CE6A2E2000CC0E5 /* HTTPTypesFoundation in Frameworks */,
 				5D93DB812CEB0BF200FB1AC2 /* ComposableArchitecture in Frameworks */,
 			);
@@ -145,6 +147,7 @@
 				5D33C29B2CE6A2E2000CC0E5 /* HTTPTypes */,
 				5D33C29D2CE6A2E2000CC0E5 /* HTTPTypesFoundation */,
 				5D93DB802CEB0BF200FB1AC2 /* ComposableArchitecture */,
+				5DFFD37D2CEDEED0005D9400 /* DataProvider */,
 			);
 			productName = Ducascopy;
 			productReference = 5D11D3152CE53DF100BCBF81 /* Ducascopy.app */;
@@ -231,6 +234,7 @@
 			packageReferences = (
 				5D33C29A2CE6A2CF000CC0E5 /* XCRemoteSwiftPackageReference "swift-http-types" */,
 				5D93DB7F2CEB0BB200FB1AC2 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				5DFFD37C2CEDEED0005D9400 /* XCLocalSwiftPackageReference "DataProvider" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D11D3162CE53DF100BCBF81 /* Products */;
@@ -598,6 +602,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		5DFFD37C2CEDEED0005D9400 /* XCLocalSwiftPackageReference "DataProvider" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = DataProvider;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		5D33C29A2CE6A2CF000CC0E5 /* XCRemoteSwiftPackageReference "swift-http-types" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -632,6 +643,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5D93DB7F2CEB0BB200FB1AC2 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
+		};
+		5DFFD37D2CEDEED0005D9400 /* DataProvider */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DataProvider;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

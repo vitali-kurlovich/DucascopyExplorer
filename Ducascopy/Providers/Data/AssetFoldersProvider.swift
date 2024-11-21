@@ -5,6 +5,8 @@
 //  Created by Vitali Kurlovich on 18.11.24.
 //
 
+import DataProvider
+
 struct AssetFoldersProvider<Provider: DataProvider>: DataProvider
     where Provider.Result == InstrumentsCollection,
     Provider.ProviderError == DataProviderError

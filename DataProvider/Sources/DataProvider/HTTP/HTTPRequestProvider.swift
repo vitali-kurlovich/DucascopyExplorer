@@ -7,6 +7,6 @@
 
 import HTTPTypes
 
-protocol HTTPRequestProvider {
+public protocol HTTPRequestProvider {
     func request() -> HTTPRequest
 }

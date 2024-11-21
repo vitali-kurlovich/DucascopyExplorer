@@ -8,18 +8,18 @@
 import Foundation
 import HTTPTypes
 
-struct BaseHTTPRequestProvider: HTTPRequestProvider {
-    let baseURL: URL
-    let method: HTTPRequest.Method
-    let headerFields: HTTPFields
+public struct BaseHTTPRequestProvider: HTTPRequestProvider {
+    public let baseURL: URL
+    public let method: HTTPRequest.Method
+    public let headerFields: HTTPFields
 
-    init(_ baseURL: URL, method: HTTPRequest.Method = .get, headerFields: HTTPFields = [:]) {
+    public init(_ baseURL: URL, method: HTTPRequest.Method = .get, headerFields: HTTPFields = [:]) {
         self.baseURL = baseURL
         self.method = method
         self.headerFields = headerFields
     }
 
-    func request() -> HTTPRequest {
+    public func request() -> HTTPRequest {
         var headerFields = self.headerFields
 
         if !headerFields.contains(.referer) {

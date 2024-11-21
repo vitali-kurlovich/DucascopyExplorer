@@ -81,7 +81,6 @@ final class AssetPickerCollectionViewController: UICollectionViewController {
             switch item {
             case let .asset(asset):
                 selectAssetHandler(asset)
-
             default:
                 break
             }

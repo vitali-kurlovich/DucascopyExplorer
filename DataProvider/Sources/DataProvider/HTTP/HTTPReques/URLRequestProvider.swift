@@ -8,14 +8,14 @@
 import Foundation
 import HTTPTypes
 
-struct URLRequestProvider: HTTPRequestProvider {
+public struct URLRequestProvider: HTTPRequestProvider {
     let url: URL
 
-    init(url: URL) {
+    public init(url: URL) {
         self.url = url
     }
 
-    func request() -> HTTPRequest {
+    public func request() -> HTTPRequest {
         let privider = BaseHTTPRequestProvider(url)
         return privider.request()
     }
