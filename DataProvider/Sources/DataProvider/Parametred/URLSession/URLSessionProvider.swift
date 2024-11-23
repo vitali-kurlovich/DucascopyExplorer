@@ -30,20 +30,16 @@ public struct URLSessionProvider: ParametredDataProvider {
             let status = response.status
 
             switch status.kind {
-            case .invalid:
-                throw ProviderError.invalid(status, data)
             case .informational, .successful, .redirection:
                 break
-            case .clientError:
-                throw ProviderError.clientError(status, data)
-            case .serverError:
-                throw ProviderError.serverError(status, data)
+            case .invalid, .clientError, .serverError:
+                throw DataProviderError(status: status, data: data)
             }
 
             return (data, response)
 
         } catch {
-            throw ProviderError.anyError(error)
+            throw DataProviderError(error: error)
         }
     }
 }

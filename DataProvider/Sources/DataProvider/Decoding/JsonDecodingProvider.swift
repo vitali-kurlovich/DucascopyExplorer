@@ -23,18 +23,9 @@ public struct JsonDecodingProvider<Result: Decodable, Provider: DataProvider>: D
     public func fetch() async throws(ProviderError) -> Result {
         do {
             let data = try await provider.fetch()
-
             return try decoder.decode(Result.self, from: data)
         } catch {
-            if let error = error as? Provider.ProviderError {
-                throw error
-            }
-
-            if let error = error as? DecodingError {
-                throw ProviderError.decodingError(error)
-            }
-
-            throw ProviderError.anyError(error)
+            throw DataProviderError(error: error)
         }
     }
 }

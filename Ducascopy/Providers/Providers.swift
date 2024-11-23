@@ -5,9 +5,9 @@
 //  Created by Vitali Kurlovich on 15.11.24.
 //
 
+import DataProvider
 import Foundation
 import HTTPTypes
-import DataProvider
 
 enum Providers {}
 

@@ -5,9 +5,9 @@
 //  Created by Vitali Kurlovich on 14.11.24.
 //
 
+import DataProvider
 import Foundation
 import HTTPTypes
-import DataProvider
 
 struct InstrumentsCollectionProvider<RequestProvider: HTTPRequestProvider>: DataProvider {
     typealias Result = InstrumentsCollection
@@ -29,7 +29,7 @@ struct InstrumentsCollectionProvider<RequestProvider: HTTPRequestProvider>: Data
         }.decode(InstrumentsCollection.self)
 
         let request = requestProvider.request()
-        
+
         return try await dataProvider.fetch(request)
     }
 }
