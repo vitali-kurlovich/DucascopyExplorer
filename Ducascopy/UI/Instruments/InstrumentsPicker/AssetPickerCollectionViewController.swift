@@ -153,12 +153,18 @@ extension AssetPickerCollectionViewController {
 
             cell.contentConfiguration = content
 
-            cell.accessories = [.detail {
-                // onDetailHandler(item)
+            cell.accessories = [.detail { [weak self] in
+                let info = item.info
 
-//                    let controller = AssetDetailsViewController(asset: item)
-//                    controller.modalPresentationStyle = .formSheet
-//                    self?.present(controller, animated: true)
+                let state = InstrumentsDetailsFeature.State(displayState: .ready(info))
+                let store = StoreOf<InstrumentsDetailsFeature>(initialState: state, reducer: {})
+
+                let detailsController = InstrumentDetailsViewController(store: store)
+                detailsController.modalPresentationStyle = .formSheet
+               
+               let controller = UINavigationController(rootViewController: detailsController)
+                
+                self?.present(controller, animated: true)
 
             }]
         }

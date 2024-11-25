@@ -20,17 +20,15 @@ public struct InstrumetInfo: Hashable {
 
     public let tags: [String]
 
-    public  let unit: String?
+    public let unit: String?
 }
 
-
 extension InstrumetInfo {
-    
     init(_ instrumet: Instrumet) {
         let currency = InstrumetCurrency(instrumet)
-        
+
         let fileInfo = InstrumetHistoryFileInfo(instrumet)
-        
+
         self.init(
             title: instrumet.title,
             name: instrumet.name,
@@ -43,9 +41,7 @@ extension InstrumetInfo {
             unit: instrumet.unit
         )
     }
-    
 }
-
 
 public struct InstrumetCurrency: Hashable {
     public let base: String
@@ -59,8 +55,8 @@ extension InstrumetCurrency {
 }
 
 public struct InstrumetHistoryFileInfo: Hashable {
-    public  let filename: String
-    public  let historyDate: InstrumetHistoryDate
+    public let filename: String
+    public let historyDate: InstrumetHistoryDate
 }
 
 extension InstrumetHistoryFileInfo {
@@ -71,10 +67,9 @@ extension InstrumetHistoryFileInfo {
     }
 }
 
-
 public struct InstrumetHistoryDate: Hashable {
-    public  let start_tick: Date
-    public  let start_10sec: Date
+    public let start_tick: Date
+    public let start_10sec: Date
     public let start_60sec: Date
     public let start_60min: Date
     public let start_day: Date

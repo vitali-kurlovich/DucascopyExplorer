@@ -18,6 +18,7 @@ struct InstrumentsDetailsFeature {
         case none
         case inProgress
         case error(String)
+        case ready(InstrumetInfo)
     }
 
     enum Action {

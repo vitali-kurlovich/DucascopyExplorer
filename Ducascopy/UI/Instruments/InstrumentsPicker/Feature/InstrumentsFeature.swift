@@ -26,6 +26,7 @@ struct InstrumentsFeature {
         case fetchFolders
         case recieveFolders([AssetFolder])
         case recieveError(String)
+        case showInfo(InstrumetInfo)
     }
 
     var body: some Reducer<State, Action> {
@@ -61,6 +62,10 @@ struct InstrumentsFeature {
 
             case let .recieveError(description):
                 state.loading = .error(description)
+                return .none
+
+            case let .showInfo(info):
+
                 return .none
             }
         }
