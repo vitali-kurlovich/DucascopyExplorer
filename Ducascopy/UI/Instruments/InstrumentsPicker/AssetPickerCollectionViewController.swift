@@ -161,9 +161,9 @@ extension AssetPickerCollectionViewController {
 
                 let detailsController = InstrumentDetailsViewController(store: store)
                 detailsController.modalPresentationStyle = .formSheet
-               
-               let controller = UINavigationController(rootViewController: detailsController)
-                
+
+                let controller = UINavigationController(rootViewController: detailsController)
+
                 self?.present(controller, animated: true)
 
             }]

@@ -77,11 +77,11 @@ public struct InstrumetHistoryDate: Hashable {
 
 extension InstrumetHistoryDate {
     init(_ instrumet: Instrumet) {
-        let start_tick = TimeInterval(instrumet.history_start_tick) ?? 0
-        let start_10sec = TimeInterval(instrumet.history_start_10sec) ?? 0
-        let start_60sec = TimeInterval(instrumet.history_start_60sec) ?? 0
-        let start_60min = TimeInterval(instrumet.history_start_60min) ?? 0
-        let start_day = TimeInterval(instrumet.history_start_day) ?? 0
+        let start_tick = (TimeInterval(instrumet.history_start_tick) ?? 0) / 1000
+        let start_10sec = (TimeInterval(instrumet.history_start_10sec) ?? 0) / 1000
+        let start_60sec = (TimeInterval(instrumet.history_start_60sec) ?? 0) / 1000
+        let start_60min = (TimeInterval(instrumet.history_start_60min) ?? 0) / 1000
+        let start_day = (TimeInterval(instrumet.history_start_day) ?? 0) / 1000
 
         self.init(
             start_tick: Date(timeIntervalSince1970: start_tick),
