@@ -19,47 +19,17 @@ struct Instrumet: Decodable {
     let quote_currency: String
 
     let tag_list: [String]
-    
+
     let history_start_tick: String
     let history_start_10sec: String
     let history_start_60sec: String
     let history_start_60min: String
     let history_start_day: String
-    
+
     let unit: String?
 }
 
-struct InstrumetInfo: Equatable {
-    let title: String
-    let name: String
 
-    let currency: InstrumetCurrency
-    let pipValue: Double
-    let special: Bool
-
-    let fileInfo:InstrumetHistoryFileInfo
-    
-    let tags: [String]
-}
-
-struct InstrumetCurrency: Equatable {
-    let base:String
-    let quote:String
-}
-
-struct InstrumetHistoryFileInfo: Equatable {
-    let filename: String
-    let historyDate: InstrumetHistoryDate
-}
-
-
-struct InstrumetHistoryDate: Equatable {
-    let start_tick: Date
-    let start_10sec: Date
-    let start_60sec: Date
-    let start_60min: Date
-    let start_day: Date
-}
 
 /*
 

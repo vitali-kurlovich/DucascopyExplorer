@@ -65,7 +65,10 @@ extension [AssetFolder] {
             let path = basePath.append(group.id)
 
             return group.instruments?.compactMap { id -> Asset? in
-                guard let instrumet = instruments[id] else { return nil }
+                guard let instrumet = instruments[id],
+                        !(instrumet.historical_filename?.isEmpty ?? true)
+                else { return nil }
+                
                 let path = path.setQuery(.init(["symbol": id]))
                 return Asset(instrumet, id: id, path: path)
             } ?? []

@@ -23,7 +23,7 @@ struct InstrumentsCollectionProvider<RequestProvider: HTTPRequestProvider>: Data
 
     func fetch() async throws(ProviderError) -> Result {
         let sessionProvider = URLSessionProvider(urlSession: urlSession)
-        
+
         let dataProvider = sessionProvider.map { data, _ -> Data in
             data.dropFirst("jsonp(".count).dropLast(")".count)
         }.decode(InstrumentsCollection.self)

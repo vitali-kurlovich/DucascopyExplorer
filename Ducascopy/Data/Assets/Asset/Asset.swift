@@ -7,18 +7,32 @@
 
 public struct Asset: Hashable {
     public let id: String
-    public let title: String
-    public let name: String
-    public let description: String
-    public let path: AssetPath
 
-    public init(id: String, title: String, name: String, description: String, path: AssetPath) {
+    public let path: AssetPath
+    
+    public let info : InstrumetInfo
+
+    public init(id: String, info : InstrumetInfo, path: AssetPath) {
         self.id = id
-        self.title = title
-        self.name = name
-        self.description = description
+        self.info = info
         self.path = path
     }
+}
+
+extension Asset {
+    
+    public var title: String {
+        info.title
+    }
+    
+    public var name: String {
+        info.name
+    }
+    
+    public var description: String {
+        info.description
+    }
+    
 }
 
 extension Asset: AssetDispalyItem {
@@ -32,11 +46,11 @@ extension Asset: AssetDispalyItem {
 }
 
 extension Asset {
-    init(_ instrument: Instrumet, id: String, path: AssetPath) {
-        let title = instrument.title
-        let name = instrument.name
-        let description = instrument.description
-
-        self.init(id: id, title: title, name: name, description: description, path: path)
+    init(  _ instrument: Instrumet, id: String, path: AssetPath) {
+        
+        let info = InstrumetInfo(instrument)
+        
+        self.init(id: id, info: info, path: path)
+        
     }
 }

@@ -5,13 +5,12 @@
 //  Created by Vitali Kurlovich on 20.11.24.
 //
 
-import UIKit
 import ComposableArchitecture
+import UIKit
 
 final class InstrumentDetailsViewController: UICollectionViewController {
-    
     private let store: StoreOf<InstrumentsFeature>
-    
+
     init(store: StoreOf<InstrumentsFeature> = .init(initialState: .init()) {
         InstrumentsFeature()
     }) {
@@ -26,6 +25,4 @@ final class InstrumentDetailsViewController: UICollectionViewController {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
 }
